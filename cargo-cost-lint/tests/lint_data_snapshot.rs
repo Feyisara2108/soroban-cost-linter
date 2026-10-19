@@ -103,10 +103,8 @@ fn update_snapshot(workspace: &Path, snapshot: &Path) {
     });
     let mut source_docs: Vec<PathBuf> = entries
         .map(|e| {
-            e.unwrap_or_else(|err| {
-                panic!("failed to read entry in {}: {err}", docs_dir.display())
-            })
-            .path()
+            e.unwrap_or_else(|err| panic!("failed to read entry in {}: {err}", docs_dir.display()))
+                .path()
         })
         .filter(|p| {
             p.extension().and_then(|ext| ext.to_str()) == Some("md")
@@ -179,7 +177,10 @@ fn update_snapshot_preserves_docs_when_source_missing() {
         update_snapshot(&scratch_workspace, &scratch_snapshot);
     }));
 
-    assert!(result.is_err(), "update must fail when docs/lints is absent");
+    assert!(
+        result.is_err(),
+        "update must fail when docs/lints is absent"
+    );
     let payload = result.unwrap_err();
     let msg = if let Some(s) = payload.downcast_ref::<&str>() {
         s.to_string()
